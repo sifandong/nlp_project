@@ -145,23 +145,37 @@ df_cleaned = df_text[['overall','reviewText','label']][:99].copy()
 df_cleaned['cleaned_text'] = df_cleaned['reviewText'].apply(text_preprocessing)
 # print(df_cleaned[:10]['cleaned_texts'])
 # print(df_cleaned.head())
-print(df_cleaned.head())
+# print(df_cleaned.head())
 
-df_cleaned.to_csv('./cleaned.csv')
-df = pd.DataFrame(pd.read_csv('./cleaned.csv'))
+# df_cleaned.to_csv('./cleaned.csv')
+# df = pd.DataFrame(pd.read_csv('./cleaned.csv'))
 
 
 msk = np.random.rand(len(df_cleaned)) < 0.8
-df_train = df[msk]
-df_test = df[~msk]
+df_train = df_cleaned[msk]
+df_test = df_cleaned[~msk]
 X_train = df_train["cleaned_text"]
 Y_train = df_train["label"]
 X_test = df_test["cleaned_text"]
 Y_test = df_test["label"]
 
+vectorizer = CountVectorizer()
+X_real_train = []
+for line in X_train:
+    # print(type(line))
+    # print(line)
+    temp = vectorizer.fit_transform(line).toarray()
+    X_real_train.append(temp)
+for line in X_test:
+    temp = vectorizer.fit_transform(line).toarray()
+    X_real_train.append(temp)
 
+print(X_real_train[:10])
 
-
-clf = MultinomialNB()
-classifier_model = clf.fit(X_train,Y_train)
-print(np.mean(classifier_model.predict(X_test) == Y_test))
+# X_new_counts = count_vect.transform(docs_new)
+# X_new_tfidf = tfidf_transformer.transform(X_new_counts)
+# print(type(X_train))
+#
+# clf = MultinomialNB()
+# classifier_model = clf.fit(X_train,Y_train)
+# print(np.mean(classifier_model.predict(X_test) == Y_test))

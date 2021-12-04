@@ -15,6 +15,7 @@ with open('Gift_Cards.json', encoding='utf-8-sig') as f_input:
     df = pd.read_json(f_input, lines=True)
 
 df.to_csv('uncleaned.csv', encoding='utf-8', index=False)
+print(df.info())
 
 def classify(x):
     if x == 5.0 or x==4.0:
@@ -29,12 +30,14 @@ def clean_dataframe(df):
     df['y'] = df['overall'].apply(classify)
 
     # dropping uneccesary columns for the analysis
-    df = df.drop(
-        labels=['Unnamed: 0', 'verified', 'asin', 'style', 'reviewerName', 'description', 'title', 'rank', 'main_cat'],
-        axis=1)
-
+    # df = df.drop(
+    #     labels=['Unnamed: 0', 'verified', 'asin', 'style', 'reviewerName', 'description', 'title', 'rank', 'main_cat'],
+    #
+    #     axis=1)
+    df = df[['overall', 'reviewText','y']].copy()
     # dropping all NaN values from the column reviewText
     df = df.dropna(axis=0, subset=['reviewText'])
+
     return df
 
 def remove_punctuation(text):
@@ -69,5 +72,13 @@ def main(URL_CLEAN=URL_CLEAN, URL_UNCLEAN=URL_UNCLEAN):
 
   #writing to dataframe
   df_clean.to_csv(URL_CLEAN)
+  print(df_clean.head())
+  print(df_clean.info())
+  count = 0
+  for line in df_clean['y']:
+      if line == 0:
+          count+=1
+  print(count)
 
 main()
+
